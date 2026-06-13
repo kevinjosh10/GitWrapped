@@ -41,10 +41,24 @@ export const BattleScreen: React.FC = () => {
     );
   }
 
-  // Determine winner
+  // Determine winner and generate dynamic comment
   const p1Score = stats!.score;
   const p2Score = challengerStats.score;
   const winner = p1Score >= p2Score ? 'p1' : 'p2';
+  
+  const generateBattleCommentary = () => {
+    const diff = Math.abs(p1Score - p2Score);
+    if (diff < 50) return "A ridiculously close match! Practically cloned DNA.";
+    if (diff > 500) return "Absolute massacre. Was the other player even typing?";
+    
+    if (winner === 'p1') {
+      if (stats!.totalStars > challengerStats.totalStars * 2) return `They tried, but ${userData!.login}'s star power was just too overwhelming.`;
+      return `${userData!.login} outcoded them in plain sight. Superior mechanics.`;
+    } else {
+      if (challengerStats.totalStars > stats!.totalStars * 2) return `We witnessed a masterclass. ${challengerData.login}'s repos are built different.`;
+      return `A tough loss for Player 1. ${challengerData.login} simply had better commit discipline.`;
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black text-white overflow-hidden flex flex-col z-[100]">
@@ -139,9 +153,14 @@ export const BattleScreen: React.FC = () => {
             <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 to-yellow-600 mb-2">
               {winner === 'p1' ? userData!.login : challengerData.login} WINS
             </h1>
-            <p className="text-xl text-gray-300 font-medium">
+            <p className="text-xl text-gray-300 font-medium mb-4">
               Flawless Victory. Superior Developer DNA detected.
             </p>
+            <div className="bg-black/50 border border-yellow-500/30 rounded-lg p-4 max-w-lg">
+              <p className="text-yellow-200/80 italic font-mono text-sm">
+                " {generateBattleCommentary()} "
+              </p>
+            </div>
             
             <button 
               onClick={() => setStage('dashboard')}
