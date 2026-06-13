@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { fetchUserProfile, fetchTopRepositories, fetchContributions, GitHubUser, GitHubRepo, ContributionsData } from '../services/github';
 import { calculateScoreAndArchetype, DeveloperStats } from '../utils/scoring';
 
-export type AppStage = 'landing' | 'analyzing' | 'intro' | 'dashboard' | 'story' | 'galaxy' | 'battle';
+export type AppStage = 'site-intro' | 'landing' | 'analyzing' | 'intro' | 'dashboard' | 'story' | 'galaxy' | 'battle';
 
 interface WrappedState {
   stage: AppStage;
@@ -20,7 +20,7 @@ interface WrappedState {
 }
 
 export const useWrappedStore = create<WrappedState>((set) => ({
-  stage: 'landing',
+  stage: 'site-intro',
   username: null,
   userData: null,
   repos: [],

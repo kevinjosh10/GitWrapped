@@ -1,5 +1,6 @@
 import { useWrappedStore } from './store/useWrappedStore';
 import { LandingPage } from './features/landing/LandingPage';
+import { SiteIntro } from './features/intro/SiteIntro';
 import { CinematicIntro } from './features/intro/CinematicIntro';
 import { WrappedStory } from './features/wrapped/WrappedStory';
 import { Dashboard } from './features/dashboard/Dashboard';
@@ -10,6 +11,7 @@ function App() {
 
   return (
     <>
+      {stage === 'site-intro' && <SiteIntro />}
       {(stage === 'landing' || stage === 'analyzing') && <LandingPage />}
       {stage === 'intro' && <CinematicIntro />}
       {stage === 'story' && <WrappedStory />}
