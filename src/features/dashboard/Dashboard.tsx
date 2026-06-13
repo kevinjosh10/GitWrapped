@@ -1,16 +1,41 @@
 import React from 'react';
 import { useWrappedStore } from '../../store/useWrappedStore';
 import { motion } from 'framer-motion';
-import { Github, Orbit, Swords, Flame, Download } from 'lucide-react';
+import { Github, Orbit, Swords, Flame, Download, X } from 'lucide-react';
 import { AreaChart, Area, Tooltip, ResponsiveContainer } from 'recharts';
+import { generateRoast } from '../../utils/roastEngine';
 
 export const Dashboard: React.FC = () => {
   const { userData, stats, contributions, setStage, reset } = useWrappedStore();
 
   if (!userData || !stats || !contributions) return null;
 
+  const [currentRoast, setCurrentRoast] = React.useState('');
+  const [showBattleModal, setShowBattleModal] = React.useState(false);
+  const [battleOpponent, setBattleOpponent] = React.useState('');
+
+  React.useEffect(() => {
+    if (stats && userData && contributions && !currentRoast) {
+      setCurrentRoast(generateRoast(stats, userData, contributions.totalContributions));
+    }
+  }, [stats, userData, contributions, currentRoast]);
+
   // Flatten contribution data for chart
   const chartData = contributions.weeks.flatMap(week => week.contributionDays).slice(-90); // last 90 days
+
+  const handleGenerateRoast = () => {
+    setCurrentRoast(generateRoast(stats!, userData!, contributions!.totalContributions));
+  };
+
+  const handleBattle = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (battleOpponent.trim()) {
+      // Transition to battle screen
+      setStage('battle');
+      // Pass battleOpponent to store via a new method (to be implemented)
+      useWrappedStore.getState().startBattle(battleOpponent.trim());
+    }
+  };
 
   return (
     <div className="min-h-screen bg-github-dark text-white p-6 pb-24">
@@ -23,8 +48,8 @@ export const Dashboard: React.FC = () => {
           <button onClick={() => setStage('galaxy')} className="flex items-center gap-2 px-4 py-2 bg-[#161b22] border border-[#30363d] rounded-lg hover:border-github-accent transition-colors">
             <Orbit className="w-4 h-4 text-purple-400" /> Galaxy
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-[#161b22] border border-[#30363d] rounded-lg hover:border-github-accent transition-colors opacity-50 cursor-not-allowed">
-            <Swords className="w-4 h-4 text-red-400" /> Battle (Soon)
+          <button onClick={() => setShowBattleModal(true)} className="flex items-center gap-2 px-4 py-2 bg-[#161b22] border border-[#30363d] rounded-lg hover:border-red-500 hover:text-red-400 transition-colors">
+            <Swords className="w-4 h-4 text-red-400" /> Battle
           </button>
         </div>
       </header>
@@ -171,10 +196,10 @@ export const Dashboard: React.FC = () => {
               <h3 className="text-lg font-bold mb-2 text-red-400 relative z-10 flex items-center gap-2">
                 <Flame className="w-5 h-5" /> AI Roast Mode
               </h3>
-              <p className="text-gray-300 relative z-10 text-sm leading-relaxed mb-4">
-                "Based on your stats, you collect side projects like Pokémon but abandon them just as fast. With {stats.totalStars} stars, at least your mom thinks you're a good programmer."
+              <p className="text-gray-300 relative z-10 text-sm leading-relaxed mb-4 italic">
+                "{currentRoast}"
               </p>
-              <button className="text-sm font-semibold text-red-400 hover:text-red-300 relative z-10 flex items-center gap-1 transition-colors">
+              <button onClick={handleGenerateRoast} className="text-sm font-semibold text-red-400 hover:text-red-300 relative z-10 flex items-center gap-1 transition-colors">
                 Generate new roast
               </button>
             </motion.div>
@@ -182,6 +207,44 @@ export const Dashboard: React.FC = () => {
 
         </div>
       </main>
+
+      {/* Battle Modal */}
+      {showBattleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-[#161b22] border border-red-500/30 p-8 rounded-2xl w-full max-w-md relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-orange-500" />
+            <button onClick={() => setShowBattleModal(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="text-2xl font-black text-white mb-2 flex items-center gap-2">
+              <Swords className="w-6 h-6 text-red-500" /> Git Battle
+            </h3>
+            <p className="text-gray-400 mb-6">Enter a GitHub username to challenge them to a stats battle. The algorithm will decide the ultimate developer.</p>
+            
+            <form onSubmit={handleBattle} className="flex flex-col gap-4">
+              <input 
+                type="text" 
+                placeholder="Opponent's Username" 
+                value={battleOpponent}
+                onChange={(e) => setBattleOpponent(e.target.value)}
+                className="bg-black border border-[#30363d] focus:border-red-500 text-white px-4 py-3 rounded-lg outline-none transition-colors"
+                autoFocus
+              />
+              <button 
+                type="submit" 
+                disabled={!battleOpponent.trim()}
+                className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50"
+              >
+                FIGHT!
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { CinematicIntro } from './features/intro/CinematicIntro';
 import { WrappedStory } from './features/wrapped/WrappedStory';
 import { Dashboard } from './features/dashboard/Dashboard';
 import { RepositoryGalaxy } from './features/galaxy/RepositoryGalaxy';
+import { BattleScreen } from './features/battle/BattleScreen';
 
 function App() {
   const stage = useWrappedStore((state) => state.stage);
@@ -15,6 +16,7 @@ function App() {
       {stage === 'story' && <WrappedStory />}
       {stage === 'dashboard' && <Dashboard />}
       {stage === 'galaxy' && <RepositoryGalaxy />}
+      {stage === 'battle' && <BattleScreen />}
     </>
   );
 }
