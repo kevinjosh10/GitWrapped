@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWrappedStore } from '../../store/useWrappedStore';
-import { ChevronRight, ChevronLeft, Github, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export const WrappedStory: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);

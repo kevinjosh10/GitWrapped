@@ -1,4 +1,3 @@
-import React from 'react';
 import { useWrappedStore } from './store/useWrappedStore';
 import { LandingPage } from './features/landing/LandingPage';
 import { CinematicIntro } from './features/intro/CinematicIntro';

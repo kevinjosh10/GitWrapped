@@ -2,7 +2,7 @@ import React from 'react';
 import { useWrappedStore } from '../../store/useWrappedStore';
 import { motion } from 'framer-motion';
 import { Github, Orbit, Swords, Flame, Download } from 'lucide-react';
-import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, Tooltip, ResponsiveContainer } from 'recharts';
 
 export const Dashboard: React.FC = () => {
   const { userData, stats, contributions, setStage, reset } = useWrappedStore();
@@ -144,7 +144,7 @@ export const Dashboard: React.FC = () => {
                 {Object.entries(stats.languages)
                   .sort(([, a], [, b]) => b - a)
                   .slice(0, 5)
-                  .map(([lang, count], idx) => (
+                  .map(([lang, count]) => (
                     <div key={lang} className="flex items-center justify-between">
                       <span className="text-gray-300">{lang}</span>
                       <div className="flex-1 mx-4 h-2 bg-gray-800 rounded-full overflow-hidden">
