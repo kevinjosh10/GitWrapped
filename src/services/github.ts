@@ -50,13 +50,13 @@ const headers: HeadersInit = {
 
 export const fetchUserProfile = async (username: string): Promise<GitHubUser> => {
   const res = await fetch(`https://api.github.com/users/${username}`, { headers });
-  if (!res.ok) throw new Error('User not found');
+  if (!res.ok) throw new Error(res.status === 404 ? 'User not found' : `Profile error: ${res.status} ${res.statusText}`);
   return res.json();
 };
 
 export const fetchTopRepositories = async (username: string, limit = 50): Promise<GitHubRepo[]> => {
   const res = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=${limit}`, { headers });
-  if (!res.ok) throw new Error('Failed to fetch repositories');
+  if (!res.ok) throw new Error(res.status === 404 ? 'User not found' : `Repos error: ${res.status} ${res.statusText}`);
   return res.json();
 };
 
