@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-github-dark text-github-text;
+  }
+}
+
+.glass-panel {
+  @apply bg-[#161b22]/80 backdrop-blur-md border border-github-border rounded-xl shadow-xl;
+}
