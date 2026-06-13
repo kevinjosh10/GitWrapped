@@ -16,36 +16,86 @@ export const LandingPage: React.FC = () => {
 
   const isAnalyzing = stage === 'analyzing';
 
+  // Text animation variants for "cooler" text appearance
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      filter: 'blur(0px)',
+      transition: { duration: 1, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-github-dark text-white">
-      {/* Background Glow */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-github-accent/20 rounded-full blur-[128px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[128px]" />
+    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#050505] text-white">
+      {/* Background Premium Gradients */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 2, ease: "easeOut" }}
+          className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-gradient-to-br from-github-accent/20 to-purple-500/10 rounded-full blur-[120px]" 
+        />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
+          className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-gradient-to-tl from-purple-700/20 to-blue-500/10 rounded-full blur-[150px]" 
+        />
       </div>
 
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-2xl px-6 flex flex-col items-center text-center"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 w-full max-w-3xl px-6 flex flex-col items-center text-center"
       >
-        <div className="flex items-center gap-3 mb-6">
-          <Github className="w-10 h-10 text-white" />
-          <h2 className="text-2xl font-bold tracking-tight">GitWrapped</h2>
-        </div>
+        <motion.div variants={itemVariants} className="flex items-center gap-3 mb-8">
+          <Github className="w-12 h-12 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
+          <h2 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+            GitWrapped
+          </h2>
+        </motion.div>
 
-        <h1 className="text-6xl sm:text-7xl font-extrabold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500">
-          Your GitHub tells a story.
-        </h1>
+        <motion.h1 
+          variants={itemVariants}
+          className="text-6xl sm:text-7xl md:text-8xl font-black tracking-tighter mb-6 leading-tight"
+        >
+          <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-200 to-gray-500 drop-shadow-sm">
+            Your GitHub
+          </span>
+          <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-500 drop-shadow-[0_0_20px_rgba(168,85,247,0.3)]">
+            tells a story.
+          </span>
+        </motion.h1>
         
-        <p className="text-xl text-gray-400 mb-12 max-w-lg">
-          Discover hidden insights behind your code. Turn your GitHub profile into a shareable visual journey.
-        </p>
+        <motion.p 
+          variants={itemVariants}
+          className="text-xl sm:text-2xl text-gray-400 mb-12 max-w-2xl font-medium tracking-wide"
+        >
+          Discover hidden insights behind your code. Turn your GitHub profile into a beautifully animated, shareable journey.
+        </motion.p>
 
-        <form onSubmit={handleSubmit} className="w-full max-w-md relative group">
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400 group-focus-within:text-github-accent transition-colors" />
+        <motion.form 
+          variants={itemVariants}
+          onSubmit={handleSubmit} 
+          className="w-full max-w-lg relative group"
+        >
+          <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+            <Search className="h-6 w-6 text-gray-500 group-focus-within:text-github-accent transition-colors duration-300" />
           </div>
           <input
             type="text"
@@ -53,34 +103,34 @@ export const LandingPage: React.FC = () => {
             onChange={(e) => setInput(e.target.value)}
             disabled={isAnalyzing}
             placeholder="Enter GitHub username"
-            className="w-full bg-[#161b22] border border-[#30363d] focus:border-github-accent focus:ring-1 focus:ring-github-accent text-white rounded-2xl py-4 pl-12 pr-32 outline-none transition-all placeholder:text-gray-500 shadow-xl"
+            className="w-full bg-[#161b22]/80 backdrop-blur-xl border border-white/10 hover:border-white/20 focus:border-github-accent focus:ring-1 focus:ring-github-accent text-white text-lg rounded-2xl py-5 pl-14 pr-36 outline-none transition-all placeholder:text-gray-500 shadow-2xl"
           />
           <button
             type="submit"
             disabled={!input.trim() || isAnalyzing}
-            className="absolute inset-y-2 right-2 px-4 bg-white text-black font-semibold rounded-xl flex items-center gap-2 hover:bg-gray-200 disabled:opacity-50 disabled:hover:bg-white transition-all"
+            className="absolute inset-y-2 right-2 px-6 bg-white text-black font-bold rounded-xl flex items-center gap-2 hover:bg-gray-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:bg-white transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
           >
             {isAnalyzing ? (
               <span className="flex items-center gap-2">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                  className="w-4 h-4 border-2 border-black border-t-transparent rounded-full"
+                  className="w-5 h-5 border-2 border-black border-t-transparent rounded-full"
                 />
               </span>
             ) : (
               <span className="flex items-center gap-2">
-                Analyze <ArrowRight className="w-4 h-4" />
+                Analyze <ArrowRight className="w-5 h-5" />
               </span>
             )}
           </button>
-        </form>
+        </motion.form>
 
         {error && (
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-6 text-red-400 bg-red-400/10 px-4 py-2 rounded-lg border border-red-400/20"
+            className="mt-8 text-red-400 bg-red-400/10 px-6 py-3 rounded-xl border border-red-400/20 font-medium"
           >
             {error}
           </motion.div>

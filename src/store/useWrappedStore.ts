@@ -20,7 +20,7 @@ interface WrappedState {
 }
 
 export const useWrappedStore = create<WrappedState>((set) => ({
-  stage: 'site-intro',
+  stage: 'landing',
   username: null,
   userData: null,
   repos: [],
