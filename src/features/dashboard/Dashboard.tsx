@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { Github, Orbit, Swords, Flame, Download, X } from 'lucide-react';
 import { AreaChart, Area, Tooltip, ResponsiveContainer } from 'recharts';
 import { generateRoast } from '../../utils/roastEngine';
+import { RecruiterView } from './RecruiterView';
+import { YearlyExport } from '../wrapped/YearlyExport';
 
 export const Dashboard: React.FC = () => {
   const { userData, stats, contributions, setStage, reset } = useWrappedStore();
@@ -93,8 +95,31 @@ export const Dashboard: React.FC = () => {
 
               <div className="w-full">
                 <div className="text-xs text-gray-400 uppercase tracking-widest mb-2 font-bold text-center">Archetype</div>
-                <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 text-purple-300 rounded-lg p-3 text-center font-semibold">
+                <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 text-purple-300 rounded-lg p-3 text-center font-semibold mb-1">
                   {stats.archetype}
+                </div>
+                <div className="text-[10px] text-gray-500 text-center font-bold">{stats.rarity}</div>
+              </div>
+
+              <div className="w-full mt-4">
+                <div className="text-xs text-gray-400 uppercase tracking-widest mb-2 font-bold text-center">Developer DNA</div>
+                <div className="grid grid-cols-2 gap-2 text-xs text-center font-bold">
+                  <div className="bg-[#161b22] border border-[#30363d] p-2 rounded text-blue-400">Builder: {stats.dna.builder}%</div>
+                  <div className="bg-[#161b22] border border-[#30363d] p-2 rounded text-green-400">Explorer: {stats.dna.explorer}%</div>
+                  <div className="bg-[#161b22] border border-[#30363d] p-2 rounded text-purple-400">Architect: {stats.dna.architect}%</div>
+                  <div className="bg-[#161b22] border border-[#30363d] p-2 rounded text-yellow-400">Mentor: {stats.dna.mentor}%</div>
+                </div>
+              </div>
+
+              <div className="w-full mt-4 bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                <div className="text-xs text-blue-400 uppercase tracking-widest mb-2 font-bold text-center">1-Year Forecast Predictor</div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm text-gray-300">Projected Score</span>
+                  <span className="font-black text-white">{stats.projectedScore}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-300">Future Archetype</span>
+                  <span className="font-black text-blue-400">{stats.futureArchetype}</span>
                 </div>
               </div>
 
@@ -203,6 +228,16 @@ export const Dashboard: React.FC = () => {
                 Generate new roast
               </button>
             </motion.div>
+          </div>
+
+          {/* Recruiter View & Export Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+            <div className="lg:col-span-2">
+              <RecruiterView />
+            </div>
+            <div className="lg:col-span-2">
+              <YearlyExport />
+            </div>
           </div>
 
         </div>
