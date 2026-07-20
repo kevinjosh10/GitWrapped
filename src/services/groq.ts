@@ -4,9 +4,23 @@ import { GitHubUser } from './github';
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
-async function generateGroqCompletion(systemPrompt: string, userPrompt: string): Promise<string> {
+async function generateGroqCompletion(systemPrompt: string, userPrompt: string, isJson: boolean = false): Promise<string> {
   if (!GROQ_API_KEY) {
     throw new Error('Groq API Key is missing. Please check your .env file.');
+  }
+
+  const payload: any = {
+    model: 'llama3-8b-8192',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ],
+    temperature: 0.8,
+    max_tokens: 1000,
+  };
+
+  if (isJson) {
+    payload.response_format = { type: "json_object" };
   }
 
   const response = await fetch(GROQ_API_URL, {
@@ -15,15 +29,7 @@ async function generateGroqCompletion(systemPrompt: string, userPrompt: string):
       'Authorization': `Bearer ${GROQ_API_KEY}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      model: 'llama3-8b-8192',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      temperature: 0.8,
-      max_tokens: 250,
-    })
+    body: JSON.stringify(payload)
   });
 
   if (!response.ok) {
@@ -34,6 +40,70 @@ async function generateGroqCompletion(systemPrompt: string, userPrompt: string):
 
   const data = await response.json();
   return data.choices[0].message.content.trim();
+}
+
+export async function generateAIStats(
+  username: string,
+  rawMetrics: {
+    totalContributions: number;
+    totalStars: number;
+    totalForks: number;
+    reposWithDescriptions: number;
+    totalSize: number;
+    uniqueLanguages: number;
+    topLanguage: string;
+    publicRepos: number;
+    followers: number;
+    hasBio: boolean;
+    hasLocation: boolean;
+  }
+): Promise<DeveloperStats> {
+  const systemPrompt = `You are a highly analytical AI that evaluates developers based on their GitHub footprint.
+  You MUST return ONLY a raw, valid JSON object matching the schema below exactly. Do NOT wrap it in markdown blockquotes or add any conversational text.
+
+  Schema requirement:
+  {
+    "score": (number, 0-100, based on contributions, stars, and repos),
+    "projectedScore": (number, 0-100, future estimate based on velocity),
+    "level": (number, 1-50, based on total overall experience),
+    "title": (string, e.g., "Rookie", "Builder", "Engineer", "Architect", "Legend"),
+    "archetype": (string, creative title like "The Explorer", "The Open Source Hero", etc.),
+    "archetypeDescription": (string, 1 sentence summary of their code style),
+    "futureArchetype": (string),
+    "dna": {
+      "builder": (number, 0-100 percentage),
+      "explorer": (number, 0-100 percentage),
+      "architect": (number, 0-100 percentage),
+      "mentor": (number, 0-100 percentage)
+    },
+    "recruiter": {
+      "score": (number, 0-100),
+      "readiness": (number, 0-100),
+      "consistency": (number, 0-100),
+      "documentation": (number, 0-100),
+      "complexity": (number, 0-100),
+      "missing": (string array, list items like "Bio", "Location", "Repository Descriptions" if lacking)
+    },
+    "rarity": (string, e.g., "Unlocked by only 15% of users")
+  }
+  
+  Notes on dna percentages: They MUST sum up to exactly 100.
+  `;
+
+  const userPrompt = `
+  Developer: ${username}
+  Raw Metrics: ${JSON.stringify(rawMetrics, null, 2)}
+  Evaluate this developer and return the JSON object.
+  `;
+
+  try {
+    const rawResponse = await generateGroqCompletion(systemPrompt, userPrompt, true);
+    const parsedData = JSON.parse(rawResponse);
+    return parsedData as DeveloperStats;
+  } catch (e) {
+    console.error("Failed to parse Groq JSON response", e);
+    throw new Error("Failed to evaluate developer profile");
+  }
 }
 
 export async function generateRoast(

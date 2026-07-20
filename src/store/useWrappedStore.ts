@@ -53,7 +53,7 @@ export const useWrappedStore = create<WrappedState>((set) => ({
         fetchContributions(username)
       ]);
 
-      const stats = calculateScoreAndArchetype(userData, repos, contributions);
+      const stats = await calculateScoreAndArchetype(userData, repos, contributions);
 
       set({
         userData,
@@ -76,7 +76,7 @@ export const useWrappedStore = create<WrappedState>((set) => ({
         fetchContributions(challengerUsername)
       ]);
 
-      const stats = calculateScoreAndArchetype(userData, repos, contributions);
+      const stats = await calculateScoreAndArchetype(userData, repos, contributions);
 
       set({
         challengerData: userData,
