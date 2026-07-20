@@ -3,7 +3,7 @@ import { useWrappedStore } from '../../store/useWrappedStore';
 import { motion } from 'framer-motion';
 import { Github, Orbit, Swords, Flame, Download, X } from 'lucide-react';
 import { AreaChart, Area, Tooltip, ResponsiveContainer } from 'recharts';
-import { generateRoast } from '../../utils/roastEngine';
+import { generateRoast } from '../../services/groq';
 import { RecruiterView } from './RecruiterView';
 import { YearlyExport } from '../wrapped/YearlyExport';
 
@@ -13,20 +13,42 @@ export const Dashboard: React.FC = () => {
   if (!userData || !stats || !contributions) return null;
 
   const [currentRoast, setCurrentRoast] = React.useState('');
+  const [isGeneratingRoast, setIsGeneratingRoast] = React.useState(false);
   const [showBattleModal, setShowBattleModal] = React.useState(false);
   const [battleOpponent, setBattleOpponent] = React.useState('');
 
   React.useEffect(() => {
-    if (stats && userData && contributions && !currentRoast) {
-      setCurrentRoast(generateRoast(stats, userData, contributions.totalContributions));
-    }
-  }, [stats, userData, contributions, currentRoast]);
+    let mounted = true;
+    const fetchInitialRoast = async () => {
+      if (stats && userData && contributions && !currentRoast && !isGeneratingRoast) {
+        setIsGeneratingRoast(true);
+        try {
+          const roast = await generateRoast(stats, userData, contributions.totalContributions);
+          if (mounted) setCurrentRoast(roast);
+        } catch (e) {
+          if (mounted) setCurrentRoast("AI Roast Engine is cooling down. Too much heat.");
+        } finally {
+          if (mounted) setIsGeneratingRoast(false);
+        }
+      }
+    };
+    fetchInitialRoast();
+    return () => { mounted = false; };
+  }, [stats, userData, contributions]);
 
   // Flatten contribution data for chart
   const chartData = contributions.weeks.flatMap(week => week.contributionDays).slice(-90); // last 90 days
 
-  const handleGenerateRoast = () => {
-    setCurrentRoast(generateRoast(stats!, userData!, contributions!.totalContributions));
+  const handleGenerateRoast = async () => {
+    setIsGeneratingRoast(true);
+    try {
+      const roast = await generateRoast(stats!, userData!, contributions!.totalContributions);
+      setCurrentRoast(roast);
+    } catch (e) {
+      setCurrentRoast("Groq API limits reached, or it refuses to roast someone this average again.");
+    } finally {
+      setIsGeneratingRoast(false);
+    }
   };
 
   const handleBattle = (e: React.FormEvent) => {
@@ -221,10 +243,20 @@ export const Dashboard: React.FC = () => {
               <h3 className="text-lg font-bold mb-2 text-red-400 relative z-10 flex items-center gap-2">
                 <Flame className="w-5 h-5" /> AI Roast Mode
               </h3>
-              <p className="text-gray-300 relative z-10 text-sm leading-relaxed mb-4 italic">
-                "{currentRoast}"
+              <p className="text-gray-300 relative z-10 text-sm leading-relaxed mb-4 italic min-h-[60px]">
+                {isGeneratingRoast ? (
+                  <span className="flex items-center gap-2 animate-pulse text-red-400">
+                    <Flame className="w-4 h-4" /> Groq AI is analyzing your terrible code...
+                  </span>
+                ) : (
+                  `"${currentRoast}"`
+                )}
               </p>
-              <button onClick={handleGenerateRoast} className="text-sm font-semibold text-red-400 hover:text-red-300 relative z-10 flex items-center gap-1 transition-colors">
+              <button 
+                onClick={handleGenerateRoast} 
+                disabled={isGeneratingRoast}
+                className="text-sm font-semibold text-red-400 hover:text-red-300 relative z-10 flex items-center gap-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 Generate new roast
               </button>
             </motion.div>

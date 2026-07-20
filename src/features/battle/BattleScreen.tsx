@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useWrappedStore } from '../../store/useWrappedStore';
 import { Swords, Trophy, XCircle, ArrowLeft } from 'lucide-react';
+import { generateBattleCommentary } from '../../services/groq';
 
 export const BattleScreen: React.FC = () => {
   const { userData, stats, challengerData, challengerStats, battleError, setStage } = useWrappedStore();
@@ -41,24 +42,29 @@ export const BattleScreen: React.FC = () => {
     );
   }
 
-  // Determine winner and generate dynamic comment
+  // Determine winner
   const p1Score = stats!.score;
   const p2Score = challengerStats.score;
   const winner = p1Score >= p2Score ? 'p1' : 'p2';
-  
-  const generateBattleCommentary = () => {
-    const diff = Math.abs(p1Score - p2Score);
-    if (diff < 50) return "A ridiculously close match! Practically cloned DNA.";
-    if (diff > 500) return "Absolute massacre. Was the other player even typing?";
-    
-    if (winner === 'p1') {
-      if (stats!.totalStars > challengerStats.totalStars * 2) return `They tried, but ${userData!.login}'s star power was just too overwhelming.`;
-      return `${userData!.login} outcoded them in plain sight. Superior mechanics.`;
-    } else {
-      if (challengerStats.totalStars > stats!.totalStars * 2) return `We witnessed a masterclass. ${challengerData.login}'s repos are built different.`;
-      return `A tough loss for Player 1. ${challengerData.login} simply had better commit discipline.`;
+  const winnerName = winner === 'p1' ? userData!.login : challengerData.login;
+
+  const [commentary, setCommentary] = useState<string>('');
+
+  useEffect(() => {
+    let mounted = true;
+    if (phase === 'winner') {
+      generateBattleCommentary(
+        userData!.login, p1Score, stats!.totalStars,
+        challengerData.login, p2Score, challengerStats.totalStars,
+        winnerName
+      ).then(text => {
+        if (mounted) setCommentary(text);
+      }).catch(() => {
+        if (mounted) setCommentary("AI Commentator disconnected. But what a match!");
+      });
     }
-  };
+    return () => { mounted = false; };
+  }, [phase, p1Score, p2Score, winnerName]);
 
   return (
     <div className="fixed inset-0 bg-black text-white overflow-hidden flex flex-col z-[100]">
@@ -158,7 +164,7 @@ export const BattleScreen: React.FC = () => {
             </p>
             <div className="bg-black/50 border border-yellow-500/30 rounded-lg p-4 max-w-lg">
               <p className="text-yellow-200/80 italic font-mono text-sm">
-                " {generateBattleCommentary()} "
+                " {commentary || "Groq AI Commentator is analyzing the destruction..."} "
               </p>
             </div>
             

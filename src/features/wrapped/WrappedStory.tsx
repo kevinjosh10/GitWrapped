@@ -2,10 +2,24 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWrappedStore } from '../../store/useWrappedStore';
 import { ArrowRight } from 'lucide-react';
+import { generateStorySummary } from '../../services/groq';
 
 export const WrappedStory: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [aiSummary, setAiSummary] = useState('');
   const { userData, stats, setStage } = useWrappedStore();
+
+  React.useEffect(() => {
+    let mounted = true;
+    if (stats && userData && !aiSummary) {
+      generateStorySummary(stats, userData).then(summary => {
+        if (mounted) setAiSummary(summary);
+      }).catch(() => {
+        if (mounted) setAiSummary(stats.archetypeDescription);
+      });
+    }
+    return () => { mounted = false; };
+  }, [stats, userData]);
 
   if (!userData || !stats) return null;
 
@@ -90,7 +104,7 @@ export const WrappedStory: React.FC = () => {
           <div className="glass-panel p-6 w-full relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <p className="text-xl text-gray-300 relative z-10 leading-relaxed">
-              "{stats.archetypeDescription}"
+              "{aiSummary || stats.archetypeDescription}"
             </p>
           </div>
         </div>
