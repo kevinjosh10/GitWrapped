@@ -44,7 +44,8 @@ export const useWrappedStore = create<WrappedState>((set) => ({
   
   setUsername: (username) => set({ username }),
 
-  analyzeProfile: async (username) => {
+  analyzeProfile: async (rawUsername) => {
+    const username = rawUsername.trim().replace(/\/+$/, '');
     set({ stage: 'analyzing', error: null, username });
     try {
       const [userData, repos, contributions] = await Promise.all([
@@ -67,7 +68,8 @@ export const useWrappedStore = create<WrappedState>((set) => ({
     }
   },
 
-  startBattle: async (challengerUsername) => {
+  startBattle: async (rawChallengerUsername) => {
+    const challengerUsername = rawChallengerUsername.trim().replace(/\/+$/, '');
     set({ battleError: null, challengerUsername });
     try {
       const [userData, repos, contributions] = await Promise.all([
