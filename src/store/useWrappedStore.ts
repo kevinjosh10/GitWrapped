@@ -70,7 +70,7 @@ export const useWrappedStore = create<WrappedState>((set) => ({
 
   startBattle: async (rawChallengerUsername) => {
     const challengerUsername = rawChallengerUsername.trim().replace(/\/+$/, '');
-    set({ battleError: null, challengerUsername });
+    set({ battleError: null, challengerUsername, challengerData: null, challengerStats: null });
     try {
       const [userData, repos, contributions] = await Promise.all([
         fetchUserProfile(challengerUsername),
@@ -85,7 +85,7 @@ export const useWrappedStore = create<WrappedState>((set) => ({
         challengerStats: stats,
       });
     } catch (err: any) {
-      set({ battleError: err.message || 'Failed to analyze challenger', stage: 'dashboard' });
+      set({ battleError: err.message || 'Failed to analyze challenger' });
     }
   },
 
