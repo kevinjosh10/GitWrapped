@@ -13,6 +13,7 @@
 [![Framer Motion](https://img.shields.io/badge/Framer_Motion-black?style=flat&logo=framer&logoColor=blue)](https://www.framer.com/motion/)
 
 [**✨ Experience the Live Demo ✨**](https://kevinjosh10.github.io/GitWrapped/)
+**Live URL:** `https://kevinjosh10.github.io/GitWrapped/`
 
 <br />
 </div>
@@ -38,13 +39,13 @@ We don't just count commits; we analyze them.
 - **1-Year Predictor**: Uses recent commit velocity vs total account age to forecast your Developer Score in one year and predict what Archetype you will evolve into.
 
 ### ⚔️ Git Battle Arena
-Challenge your friends or coworkers to a coding duel. Enter a challenger's GitHub username to summon an epic, split-screen clash. The algorithm compares Dev Scores and Total Stars, crowning a winner with a "Flawless Victory" graphic and unique post-match commentator remarks.
+Challenge your friends or coworkers to a coding duel. Enter a challenger's GitHub username to summon an epic, split-screen clash. The algorithm compares Dev Scores and Total Stars, crowning a winner with a "Flawless Victory" graphic and unique **AI-generated post-match commentator remarks** powered by Groq.
 
 ### 💼 Recruiter Insights Engine
 A highly practical tool for job seekers. Generate a rigorous **Recruiter Score** based on Consistency, Documentation, and Project Complexity. It also provides a **Portfolio Readiness %** with an actionable checklist of missing profile elements (like empty bios or un-described repositories).
 
-### 🔥 Dynamic AI Roast Engine
-Feeling brave? Our fully client-side Roast Engine mathematically analyzes your primary programming language, exact star count, and commit frequency to stitch together brutally funny, highly personalized insults about your coding habits. 
+### 🔥 Dynamic AI Roast Engine (Powered by Groq)
+Feeling brave? Our fully integrated AI Roast Engine uses Groq's lightning-fast `llama-3.1-8b` model to evaluate your primary programming language, exact star count, and commit frequency. It generates brutally funny, highly personalized, and 100% unique insults about your coding habits every time you click.
 
 ### 🌌 3D Repository Galaxy
 Explore your codebase in interactive 3D. Powered by `@react-three/fiber`, GitWrapped renders your top repositories as an orbiting solar system. Drag, zoom, and explore your digital universe.
